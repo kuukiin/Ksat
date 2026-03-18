@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Tính vật tư ốp tường</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f2f2f2;
+padding:20px;
+}
+
+.main{
+max-width:900px;
+margin:auto;
+background:white;
+padding:20px;
+border-radius:10px;
+}
+
+.room{
+border:2px solid #ccc;
+padding:15px;
+margin-top:20px;
+}
+
+input,select{
+width:100%;
+padding:6px;
+margin:4px 0;
+}
+
+button{
+background:#27ae60;
+color:white;
+border:none;
+padding:6px 10px;
+margin-top:6px;
+cursor:pointer;
+}
+
+.box{
+border:1px dashed #aaa;
+padding:8px;
+margin-top:6px;
+}
+
+.result{
+margin-top:20px;
+font-weight:bold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="main">
+
+<h2>Tính nhựa ốp tường / trần</h2>
+
+<h3>Giá vật liệu</h3>
+
+<label>Giá nhựa thường / m²</label>
+<input id="giaThuong" type="number">
+
+<label>Giá nhựa gương / m²</label>
+<input id="giaGuong" type="number">
+
+<label>Giá lam sóng / m²</label>
+<input id="giaLam" type="number">
+
+<label>Giá phào / m</label>
+<input id="giaPhao" type="number">
+
+<hr>
+
+<div id="rooms"></div>
+
+<button onclick="themPhong()">Thêm phòng</button>
+
+<button onclick="tinh()">Tính</button>
+
+<div id="ketqua" class="result"></div>
+
+</div>
+
+<script>
+
+let roomIndex=0
+let dienTichTam=1.8
+
+function themPhong(){
+
+roomIndex++
+
+let html=`
+
+<div class="room">
+
+<h3>Phòng ${roomIndex}</h3>
+
+<h4>Kích thước phòng (cm)</h4>
+
+<label>Dài</label>
+<input class="dai" type="number">
+
+<label>Rộng</label>
+<input class="rong" type="number">
+
+<label>Cao</label>
+<input class="cao" type="number">
+
+
+<h4>Trần</h4>
+
+<select class="loaiTran">
+
+<option value="1">Trần phẳng</option>
+<option value="1.2">Trần nhị cấp</option>
+
+</select>
+
+<select class="nhuaTran">
+
+<option value="thuong">Nhựa thường</option>
+<option value="guong">Nhựa gương</option>
+
+</select>
+
+
+<h4>Tường</h4>
+
+<select class="nhuaTuong">
+
+<option value="thuong">Nhựa thường</option>
+<option value="guong">Nhựa gương</option>
+
+</select>
+
+
+<h4>Cửa ra vào</h4>
+
+<div class="doors"></div>
+
+<button onclick="themCua(this)">Thêm cửa</button>
+
+
+<h4>Cửa sổ</h4>
+
+<div class="windows"></div>
+
+<button onclick="themCuaSo(this)">Thêm cửa sổ</button>
+
+
+<h4>Lam sóng</h4>
+
+<label>Dài (cm)</label>
+<input class="lamDai" type="number">
+
+<label>Rộng (cm)</label>
+<input class="lamRong" type="number">
+
+
+<h4>Nẹp góc</h4>
+
+<label>Số góc</label>
+<input class="soGoc" type="number" value="4">
+
+<div class="roomResult"></div>
+
+</div>
+`
+
+document.getElementById("rooms").insertAdjacentHTML("beforeend",html)
+
+}
+
+function themCua(btn){
+
+let box=btn.parentElement.querySelector(".doors")
+
+box.insertAdjacentHTML("beforeend",`
+
+<div class="box">
+
+<label>Rộng cửa (cm)</label>
+<input class="cuaRong" type="number">
+
+<label>Cao cửa (cm)</label>
+<input class="cuaCao" type="number">
+
+</div>
+
+`)
+
+}
+
+function themCuaSo(btn){
+
+let box=btn.parentElement.querySelector(".windows")
+
+box.insertAdjacentHTML("beforeend",`
+
+<div class="box">
+
+<label>Rộng cửa sổ (cm)</label>
+<input class="cuasoRong" type="number">
+
+<label>Cao cửa sổ (cm)</label>
+<input class="cuasoCao" type="number">
+
+</div>
+
+`)
+
+}
+
+function tinh(){
+
+let giaThuong=parseFloat(document.getElementById("giaThuong").value)||0
+let giaGuong=parseFloat(document.getElementById("giaGuong").value)||0
+let giaLam=parseFloat(document.getElementById("giaLam").value)||0
+let giaPhao=parseFloat(document.getElementById("giaPhao").value)||0
+
+let tongTien=0
+
+document.querySelectorAll(".room").forEach(room=>{
+
+let dai=(parseFloat(room.querySelector(".dai").value)||0)/100
+let rong=(parseFloat(room.querySelector(".rong").value)||0)/100
+let cao=(parseFloat(room.querySelector(".cao").value)||0)/100
+
+let chuvi=(dai+rong)*2
+
+let tran=dai*rong
+
+let tuong=chuvi*cao
+
+let heSoTran=parseFloat(room.querySelector(".loaiTran").value)||1
+
+tran=tran*heSoTran
+
+
+let tongCua=0
+
+room.querySelectorAll(".doors .box").forEach(c=>{
+
+let w=(parseFloat(c.querySelector(".cuaRong").value)||0)/100
+let h=(parseFloat(c.querySelector(".cuaCao").value)||0)/100
+
+tongCua+=w*h
+
+})
+
+
+room.querySelectorAll(".windows .box").forEach(c=>{
+
+let w=(parseFloat(c.querySelector(".cuasoRong").value)||0)/100
+let h=(parseFloat(c.querySelector(".cuasoCao").value)||0)/100
+
+tongCua+=w*h
+
+})
+
+
+tuong=tuong-tongCua
+
+if(tuong<0){tuong=0}
+
+
+let lamDai=(parseFloat(room.querySelector(".lamDai").value)||0)/100
+let lamRong=(parseFloat(room.querySelector(".lamRong").value)||0)/100
+
+let lam=lamDai*lamRong
+
+
+let lenChan=chuvi
+
+let soGoc=parseFloat(room.querySelector(".soGoc").value)||0
+
+let nepGoc=soGoc*cao
+
+
+let phao=lenChan+nepGoc+chuvi
+
+
+let tamTran=Math.ceil(tran/dienTichTam)
+let tamTuong=Math.ceil(tuong/dienTichTam)
+
+
+let tienPhong=
+
+(tran+tuong)*giaThuong+
+lam*giaLam+
+phao*giaPhao
+
+
+tongTien+=tienPhong
+
+
+room.querySelector(".roomResult").innerHTML=
+
+`
+Trần: ${tran.toFixed(2)} m²<br>
+
+Tường sau khi trừ cửa: ${tuong.toFixed(2)} m²<br>
+
+Lam sóng: ${lam.toFixed(2)} m²<br>
+
+Len chân tường: ${lenChan.toFixed(2)} m<br>
+
+Nẹp góc: ${nepGoc.toFixed(2)} m<br>
+
+Phào: ${phao.toFixed(2)} m<br>
+
+Nhựa cần: ${tamTran+tamTuong} tấm<br>
+
+Tiền phòng: ${tienPhong.toLocaleString()}
+`
+
+})
+
+document.getElementById("ketqua").innerHTML=
+
+`
+<hr>
+
+<h2>Tổng tiền công trình: ${tongTien.toLocaleString()}</h2>
+`
+
+}
+
+</script>
+
+</body>
+
+</html>
